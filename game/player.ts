@@ -1,6 +1,7 @@
 import {Action} from './action';
 import {Hit} from './actions/hit';
 import {Game} from './game';
+import {DamageTypes} from './models/damageTypes';
 
 export class Player {
     game: Game;
@@ -10,6 +11,13 @@ export class Player {
     action: Action;
     isDead: boolean;
     character: string;
+    resists = {
+        [DamageTypes.BLUNT]: 1,
+        [DamageTypes.CUTTING]: 1,
+        [DamageTypes.PIRCING]: 1,
+        [DamageTypes.FIRE]: 1,
+        [DamageTypes.FROST]: 1,
+    };
 
     constructor(public chatId: string, character: string, public username: string) {
         this.character = character.toLowerCase();
@@ -18,23 +26,35 @@ export class Player {
             case 'варвар':
                 this.helthMax = 140;
                 this.availableActions = {
-                    'ударить рукой': new Hit(5, 7),
-                    'ударить ногой': new Hit(3, 9),
+                    'ударить рукой': new Hit(5, 7, DamageTypes.BLUNT),
+                    'ударить ногой': new Hit(3, 9, DamageTypes.BLUNT),
                 };
+                this.resists[DamageTypes.BLUNT] = 1.2;
+                this.resists[DamageTypes.CUTTING] = 1.4;
+                this.resists[DamageTypes.FIRE] = 1.5;
+                this.resists[DamageTypes.FROST] = 1.1;
                 break;
             case 'воен':
                 this.helthMax = 100;
                 this.availableActions = {
-                    'ударить мечем': new Hit(5, 7),
-                    'ударить щитом': new Hit(3, 9),
+                    'ударить мечем': new Hit(5, 7, DamageTypes.CUTTING),
+                    'ударить щитом': new Hit(3, 9, DamageTypes.BLUNT),
                 };
+                this.resists[DamageTypes.BLUNT] = 1.3;
+                this.resists[DamageTypes.CUTTING] = 0.9;
+                this.resists[DamageTypes.FIRE] = 1.2;
+                this.resists[DamageTypes.FROST] = 1.1;
                 break;
             case 'маг':
                 this.helthMax = 70;
                 this.availableActions = {
-                    'огненный шар': new Hit(5, 7),
-                    'ледяная стрела': new Hit(3, 9),
+                    'огненный шар': new Hit(5, 7, DamageTypes.FIRE),
+                    'ледяная стрела': new Hit(3, 9, DamageTypes.FROST),
                 };
+                this.resists[DamageTypes.BLUNT] = 1.5;
+                this.resists[DamageTypes.CUTTING] = 1.7;
+                this.resists[DamageTypes.FIRE] = 0.5;
+                this.resists[DamageTypes.FROST] = 0.5;
                 break;
         }
 
@@ -68,5 +88,9 @@ export class Player {
         } else if (percent > 0) {
             return 'смертельно ранен';
         }
+    }
+
+    getResist(type: DamageTypes): number {
+        return this.resists[type];
     }
 }
