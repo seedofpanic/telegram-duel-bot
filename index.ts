@@ -1,7 +1,7 @@
 import * as TelegramBot from 'node-telegram-bot-api';
 import {Game} from './game/game';
-import {Player} from './game/player';
 import {TelegramBotWithLogs} from './game/logs';
+import {Combat} from './game/combat';
 
 export let bot: TelegramBot;
 
@@ -11,72 +11,70 @@ if (process.env['DEBUG']) {
     bot = new TelegramBot(process.env['TOKEN'], {polling: true});
 }
 
-const games: Game[] = [];
-const players: {[name: string]: Player} = {};
+const game = new Game();
 
 bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
     const chatId = msg.chat.id.toString();
-    let player = players[chatId];
+    let player = game.getPlayer(chatId);
 
     if (!match[1]) {
-        Game.showCharacters(chatId);
+        game.showCharacters(chatId);
 
         return;
     }
 
-    if (!Game.isAllowedCharacter(match[1])) {
+    if (!game.isAllowedCharacter(match[1])) {
         return;
     }
 
     if (!player) {
-        player = new Player(chatId, match[1], msg.chat.username);
-        players[chatId] = player;
+        player = game.addPlayer(chatId, match[1], msg.chat.username);
     }
 
-    if (player.game) {
+    if (player.currentCombat) {
         bot.sendMessage(chatId, 'Вы уже ожидаете противника, напишите /стоп для выхода из очереди');
 
         return;
     }
 
-    if (games.length === 0) {
-        const game = new Game();
+    if (game.combats.length === 0) {
+        const combat = new Combat();
 
-        games.push(game);
+        game.combats.push(combat);
         game.players[chatId] = player;
-        player.game = game;
+        player.currentCombat = combat;
         bot.sendMessage(chatId, 'Ожидаем противника');
     } else {
-        const game: Game = games.shift();
+        const combat: Combat = game.combats.shift();
 
-        game.players[chatId] = player;
-        player.game = game;
-        game.start();
+        combat.players[chatId] = player;
+        player.currentCombat = combat;
+        combat.start();
     }
 });
 
 bot.onText(/^\/стоп$/, (msg) => {
     const chatId = msg.chat.id.toString();
-    let player = players[chatId];
+    let player = game.players[chatId];
 
-    games.splice(games.indexOf(player.game), 1);
-    player.game = null;
+    game.combats.splice(game.combats.indexOf(player.currentCombat), 1);
+    player.currentCombat = null;
 
     bot.sendMessage(chatId, 'Вы покинули очередь');
 });
 
 bot.onText(/^\/ударить (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
-    let player = players[chatId];
+    let player = game.players[chatId];
 
     bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
 
     try {
         player.setAction(match[1]);
 
-        if (player.game.allReady()) {
-            player.game.perform();
-            player.game.showResult();
+        if (player.currentCombat.allReady()) {
+            player.currentCombat.perform();
+            player.currentCombat.showResult();
         } else {
             bot.sendMessage(chatId, '\nожидаем противника');
         }

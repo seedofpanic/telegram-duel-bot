@@ -1,10 +1,10 @@
 import {Action} from './action';
 import {Hit} from './actions/hit';
-import {Game} from './game';
 import {DamageTypes} from './models/damageTypes';
+import {Combat} from './combat';
 
 export class Player {
-    game: Game;
+    currentCombat: Combat;
     helthMax: number;
     helth: number;
     availableActions: {[name: string]: Action};
