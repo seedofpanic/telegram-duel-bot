@@ -1,7 +1,7 @@
 import * as TelegramBot from 'node-telegram-bot-api';
 import * as Stream from 'stream';
 
-export class TelegramBotWithLogs extends TelegramBot {
+export class TelegramBotWithLogs implements TelegramBot {
     parent: TelegramBot;
 
     startPolling(options?: TelegramBot.StartPollingOptions): Promise<any> {
@@ -312,7 +312,6 @@ export class TelegramBotWithLogs extends TelegramBot {
     }
 
     constructor(token: string, options?: TelegramBot.ConstructorOptions) {
-        super(token, options);
         this.parent = new TelegramBot(token, options);
     }
 
