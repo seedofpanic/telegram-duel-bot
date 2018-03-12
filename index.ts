@@ -1,8 +1,15 @@
 import * as TelegramBot from 'node-telegram-bot-api';
 import {Game} from './game/game';
 import {Player} from './game/player';
+import {TelegramBotWithLogs} from './game/logs';
 
-export const bot = new TelegramBot(process.env['TOKEN'], {polling: true});
+export let bot: TelegramBot;
+
+if (process.env['DEBUG']) {
+    bot = new TelegramBotWithLogs(process.env['TOKEN'], {polling: true});
+} else {
+    bot = new TelegramBot(process.env['TOKEN'], {polling: true});
+}
 
 const games: Game[] = [];
 const players: {[name: string]: Player} = {};
