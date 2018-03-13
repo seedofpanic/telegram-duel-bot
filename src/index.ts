@@ -1,15 +1,6 @@
-import * as TelegramBot from 'node-telegram-bot-api';
 import {Game} from './game/game';
-import {TelegramBotWithLogs} from './game/logs';
 import {Combat} from './game/combat';
-
-export let bot: TelegramBot;
-
-if (process.env['DEBUG']) {
-    bot = new TelegramBotWithLogs(process.env['TOKEN'], {polling: true});
-} else {
-    bot = new TelegramBot(process.env['TOKEN'], {polling: true});
-}
+import {bot} from './game/bot';
 
 const game = new Game();
 
@@ -55,17 +46,17 @@ bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
 
 bot.onText(/^\/стоп$/, (msg) => {
     const chatId = msg.chat.id.toString();
-    let player = game.players[chatId];
+    const player = game.players[chatId];
 
     game.combats.splice(game.combats.indexOf(player.currentCombat), 1);
-    player.currentCombat = null;
+    player.currentCombat = undefined;
 
     bot.sendMessage(chatId, 'Вы покинули очередь');
 });
 
 bot.onText(/^\/ударить (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
-    let player = game.players[chatId];
+    const player = game.players[chatId];
 
     bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
 
@@ -102,7 +93,7 @@ bot.onText(/^\/инфо (.+)/, (msg, match) => {
         if (res) {
             return res[sub];
         } else {
-            return null;
+            return undefined;
         }
     }, infoTexts);
 

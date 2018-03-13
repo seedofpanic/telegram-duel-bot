@@ -1,11 +1,12 @@
 import {Player} from './player';
-import {bot} from '../index';
 import {Combat} from './combat';
+import {bot} from './bot';
+import {capitalize} from '../../utils/capitalize';
 
 const allowedCharacters: {[name: string]: boolean} = {
-    'Варвар': true,
-    'Воен': true,
-    'Маг': true,
+    'варвар': true,
+    'воен': true,
+    'маг': true,
 };
 
 export class Game {
@@ -17,19 +18,8 @@ export class Game {
         bot.sendMessage(chatId, 'выберите персонажа', this.getCharacters());
     }
 
-    getCharacters() {
-        return {reply_markup: {
-                keyboard: [
-                    Object.keys(allowedCharacters).map(character => {
-                        return {text: '/готов ' + character}
-                    })
-                ],
-                one_time_keyboard: true
-            }};
-    }
-
     isAllowedCharacter(character: string) {
-        return allowedCharacters[character];
+        return allowedCharacters[character.toLowerCase()];
     }
 
     getPlayer(chatId: string) {
@@ -40,5 +30,16 @@ export class Game {
         this.players[chatId] = new Player(chatId, character, username);
 
         return this.players[chatId];
+    }
+
+    private getCharacters() {
+        return {reply_markup: {
+                keyboard: [
+                    Object.keys(allowedCharacters).map(character => {
+                        return {text: '/готов ' + capitalize(character)};
+                    })
+                ],
+                one_time_keyboard: true
+            }};
     }
 }
