@@ -13,7 +13,11 @@ export class TelegramBotWithLogs extends TelegramBot {
                 this.log({msg: `Message`, data: msg});
                 this.log({msg: `Match`, data: match});
 
-                callback(msg, match);
+                try {
+                    callback(msg, match);
+                } catch (e) {
+                    this.error({msg: `onText: ${regexp.source}`, data: e});
+                }
             });
         } catch (e) {
             this.error({msg: `onText: ${regexp.source}`, data: e});

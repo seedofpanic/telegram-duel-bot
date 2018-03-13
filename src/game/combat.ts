@@ -1,5 +1,5 @@
-import {bot} from '../index';
 import {Player} from './player';
+import {bot} from './bot';
 
 export class Combat {
     players: {[name: string]: Player} = {};
@@ -79,5 +79,9 @@ export class Combat {
             bot.sendMessage(chatId, 'Противник найден\n' + this.getVsMessage(),
                 this.getActions(this.players[chatId]));
         });
+    }
+
+    addPlayer(player: Player) {
+        this.players[player.chatId] = player;
     }
 }

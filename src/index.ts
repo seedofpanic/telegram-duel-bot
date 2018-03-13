@@ -32,13 +32,13 @@ bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
         const combat = new Combat();
 
         game.combats.push(combat);
-        game.players[chatId] = player;
         player.currentCombat = combat;
+        combat.addPlayer(player);
         bot.sendMessage(chatId, 'Ожидаем противника');
     } else {
         const combat: Combat = game.combats.shift();
 
-        combat.players[chatId] = player;
+        combat.addPlayer(player);
         player.currentCombat = combat;
         combat.start();
     }
