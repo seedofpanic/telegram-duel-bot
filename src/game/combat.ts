@@ -20,6 +20,8 @@ export class Combat {
 
         this.players[ids[0]].action.perform(this.players[ids[0]], this.players[ids[1]]);
         this.players[ids[1]].action.perform(this.players[ids[1]], this.players[ids[0]]);
+        this.players[ids[0]].action = undefined;
+        this.players[ids[1]].action = undefined;
 
         this.isEnded = Object.keys(this.players).some(key => this.players[key].isDead);
     }
@@ -41,7 +43,7 @@ export class Combat {
             if (myId === player.chatId.toString()) {
                 return `\nу вас осталось ${player.helth}/${player.helthMax} здоровья`;
             } else {
-                return`\nпротивник ${player.getStatus()}`;
+                return`\nу противника ${player.helth}/${player.helthMax} здоровья`;
             }
         }).join('\n');
     }
@@ -68,7 +70,7 @@ export class Combat {
     getActions(player: Player) {
         return {reply_markup: {
                 keyboard: [
-                    Object.keys(player.availableActions).map(action => ({text: action}))
+                    Object.keys(player.availableActions).map(action => ({text: '/act ' + action}))
                 ],
                 one_time_keyboard: true
             }};

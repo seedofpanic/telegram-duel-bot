@@ -54,7 +54,7 @@ bot.onText(/^\/стоп$/, (msg) => {
     bot.sendMessage(chatId, 'Вы покинули очередь');
 });
 
-bot.onText(/^\/ударить (.+)/, (msg, match) => {
+bot.onText(/^\/act (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
     const player = game.players[chatId];
 
