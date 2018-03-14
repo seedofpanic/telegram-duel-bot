@@ -67,11 +67,15 @@ bot.onText(/^\/act (.+)/, (msg, match) => {
             player.currentCombat.perform();
             player.currentCombat.showResult();
         } else {
-            bot.sendMessage(chatId, '\nожидаем противника');
+            bot.sendMessage(chatId, 'ожидаем противника');
         }
     } catch (e) {
         console.log(e);
     }
+});
+
+bot.onText(/^\/start$/, (msg) => {
+    bot.sendMessage(msg.chat.id, 'Приветствую на Арене! Пиши /готов и вступай в бой!');
 });
 
 const infoTexts: any = {

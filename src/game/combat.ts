@@ -41,9 +41,9 @@ export class Combat {
             const player = this.players[key];
 
             if (myId === player.chatId.toString()) {
-                return `\nу вас осталось ${player.helth}/${player.helthMax} здоровья`;
+                return `у вас осталось ${player.helth}/${player.helthMax} здоровья`;
             } else {
-                return`\nу противника ${player.helth}/${player.helthMax} здоровья`;
+                return `у противника ${player.helth}/${player.helthMax} здоровья`;
             }
         }).join('\n');
     }

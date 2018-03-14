@@ -4,7 +4,7 @@ import * as TelegramBot from 'node-telegram-bot-api';
 export let bot: TelegramBot;
 
 if (process.env['DEBUG']) {
-    bot = new TelegramBotWithLogs(process.env['TOKEN'], {polling: true});
+    bot = new TelegramBotWithLogs(process.env['TOKEN'], {polling: process.env['MODE'] !== 'test'});
 } else {
-    bot = new TelegramBot(process.env['TOKEN'], {polling: true});
+    bot = new TelegramBot(process.env['TOKEN'], {polling: process.env['MODE'] !== 'test'});
 }
