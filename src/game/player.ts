@@ -103,7 +103,7 @@ export class Player {
     }
 
     getResist(type: DamageTypes): number {
-        return this.resists[type];
+        return this.resists[type] || 1;
     }
 
     addEffect(effect: Effect) {
