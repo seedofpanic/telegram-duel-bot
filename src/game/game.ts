@@ -5,7 +5,7 @@ import {capitalize} from '../../utils/capitalize';
 
 const allowedCharacters: {[name: string]: boolean} = {
     'варвар': true,
-    'воен': true,
+    'воин': true,
     'маг': true,
 };
 
@@ -13,6 +13,10 @@ export class Game {
 
     players: {[name: string]: Player} = {};
     combats: Combat[] = [];
+
+    static calcDamage(minDamage: number, maxDamage: number) {
+        return Math.ceil(Math.random() * (maxDamage - minDamage)) + minDamage;
+    }
 
     showCharacters(chatId: string) {
         bot.sendMessage(chatId, 'выберите персонажа', this.getCharacters());

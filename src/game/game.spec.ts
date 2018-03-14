@@ -16,7 +16,7 @@ describe('Game', () => {
         expect(bot.sendMessage).toBeCalledWith('1', 'выберите персонажа',
             {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воен'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
                     'one_time_keyboard': true
                 }
             });
@@ -28,9 +28,9 @@ describe('Game', () => {
             expect(game.isAllowedCharacter('варвар')).toBe(true);
         });
 
-        it('Воен доступен', () => {
-            expect(game.isAllowedCharacter('Воен')).toBe(true);
-            expect(game.isAllowedCharacter('воен')).toBe(true);
+        it('Воин доступен', () => {
+            expect(game.isAllowedCharacter('Воин')).toBe(true);
+            expect(game.isAllowedCharacter('воин')).toBe(true);
         });
 
         it('Маг доступен', () => {
@@ -46,7 +46,7 @@ describe('Game', () => {
 
     describe('addPlayer', () => {
         it('Верно добавляет пользователя в игру', () => {
-            const player = game.addPlayer('1', 'Воен', 'test');
+            const player = game.addPlayer('1', 'Воин', 'test');
 
             expect(game.players['1']).toBe(player);
         });
@@ -54,7 +54,7 @@ describe('Game', () => {
 
     describe('getPlayer', () => {
         it('Если пользователь есть в игре, возвращает его', () => {
-            const player = game.addPlayer('1', 'Воен', 'test');
+            const player = game.addPlayer('1', 'Воин', 'test');
 
             expect(game.getPlayer('1')).toBe(player);
         });

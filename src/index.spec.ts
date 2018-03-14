@@ -46,7 +46,7 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воен'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
                     'one_time_keyboard': true
                 }
             },
@@ -54,8 +54,8 @@ describe('bot', () => {
         }]);
     });
 
-    it('Первый игрок сообщил что готов играть за Воена', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов Воен', chat: chat1} as any});
+    it('Первый игрок сообщил что готов играть за Воина', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/готов Воин', chat: chat1} as any});
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Ожидаем противника'
@@ -68,7 +68,7 @@ describe('bot', () => {
             'chatId': '2',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воен'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
                     'one_time_keyboard': true
                 }
             },
