@@ -1,6 +1,5 @@
 {
   "name": "bototory",
-  "preferGlobal": "true",
   "bin": {
     "jest": "/.bin/jest"
   },
