@@ -1,11 +1,16 @@
 {
   "name": "bototory",
+  "preferGlobal": "true",
+  "bin": {
+    "jest": "/.bin/jest"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node_modules/.bin/ts-node src/index.ts",
     "test": "export MODE=test && node_modules/.bin/jest",
+    "wintest": "set MODE=test && jest",
     "testci": "export MODE=test && node_modules/.bin/jest --runInBand",
     "lint": "node_modules/.bin/tslint \"src/**/*.ts\""
   },
