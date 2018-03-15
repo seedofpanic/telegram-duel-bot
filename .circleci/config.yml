@@ -47,7 +47,7 @@ jobs:
 
                       ssh ${HOST_NAME} "cd ${HOST_DIR};git pull"
                       ssh ${HOST_NAME} "cd ${HOST_DIR};npm i"
-                      ssh ${HOST_NAME} "cd ${HOST_DIR};npm run stop:prod || 1"
+                      ssh ${HOST_NAME} "cd ${HOST_DIR};npm run stop:prod || true"
                       ssh ${HOST_NAME} "cd ${HOST_DIR};npm run start:prod"
                     fi
 
