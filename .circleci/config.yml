@@ -46,8 +46,8 @@ jobs:
                       echo "${HOST_KEY}" >> ~/.ssh/known_hosts
 
                       ssh ${HOST_NAME} "cd ${HOST_DIR};git pull ${HOST_DIR}"
-                      ssh ${HOST_NAME} "cd ${HOST_DIR};/usr/share/yarn/bin/yarn run stop:prod"
-                      ssh ${HOST_NAME} "cd ${HOST_DIR};/usr/share/yarn/bin/yarn run start:prod"
+                      ssh ${HOST_NAME} "cd ${HOST_DIR};npm run stop:prod"
+                      ssh ${HOST_NAME} "cd ${HOST_DIR};npm run start:prod"
                     fi
 
 
