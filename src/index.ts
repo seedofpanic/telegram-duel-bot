@@ -78,7 +78,9 @@ bot.onText(/^\/start$/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Приветствую на Арене! Пиши /готов и вступай в бой!');
 });
 
-const infoTexts: any = {
+type Mixed<T = string> = {[name: string]: string | T};
+
+const infoTexts: Mixed<Mixed<string>> = {
     'ударить': {
         'рукой': 'рукой: усойчив, ногой: нормально',
         'ногой': 'рукой: не устойчив, ногой: нормально',
@@ -95,7 +97,7 @@ bot.onText(/^\/инфо (.+)/, (msg, match) => {
 
     const result = path.reduce((res, sub) => {
         if (res) {
-            return res[sub];
+            return res[sub] as Mixed;
         } else {
             return undefined;
         }

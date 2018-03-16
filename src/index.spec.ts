@@ -1,8 +1,30 @@
 import './index';
 import {bot} from './game/bot';
 import * as TelegramBot from 'node-telegram-bot-api';
+import {Chat} from 'node-telegram-bot-api';
+import {User} from 'node-telegram-bot-api';
 
 bot.stopPolling();
+
+let updateId = 0;
+
+function getMessage(chatId: number, text: string): TelegramBot.Update {
+    updateId++;
+
+    return {
+        update_id: updateId,
+        message: {
+            message_id: updateId,
+            date: 0,
+            text,
+            chat: {
+                id: chatId,
+                type: 'chat',
+                username: 'username' + chatId,
+            }
+        }
+    };
+}
 
 describe('bot', () => {
 
@@ -41,7 +63,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок сообщил что готов', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов', chat: chat1} as any});
+        bot.processUpdate(getMessage(1, '/готов'));
 
         expect(results).toEqual([{
             'chatId': '1',
@@ -56,7 +78,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок сообщил что готов играть за Воина', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов Воин', chat: chat1} as any});
+        bot.processUpdate(getMessage(1,'/готов Воин'));
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Ожидаем противника'
@@ -64,7 +86,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок сообщил что готов', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/готов'));
         expect(results).toEqual([{
             'chatId': '2',
             'options': {
@@ -78,7 +100,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок сообщил что готов играть за Мага', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов Маг', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/готов Маг'));
         expect(results).toEqual([{
             'chatId': '1',
             'options': {
@@ -87,7 +109,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nuser 1 vs user 2'
+            'text': 'Противник найден\nusername1 vs username2'
         }, {
             'chatId': '2',
             'options': {
@@ -96,12 +118,12 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nuser 1 vs user 2'
+            'text': 'Противник найден\nusername1 vs username2'
         }]);
     });
 
     it('Первый игрок выбирает ударить мечем', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ударить мечем', chat: chat1} as any});
+        bot.processUpdate(getMessage(1, '/act ударить мечем'));
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
@@ -111,7 +133,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок выбирает огненный шар', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act огненный шар', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/act огненный шар'));
 
         expect(results).toEqual([{
             'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
@@ -137,7 +159,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок выбирает огненный шар', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act огненный шар', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/act огненный шар'));
 
         expect(results).toEqual([{
             'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
@@ -147,7 +169,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок выбирает ударить щитом', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ударить щитом', chat: chat1} as any});
+        bot.processUpdate(getMessage(1, '/act ударить щитом'));
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
@@ -173,7 +195,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок выбирает ледяную стрелу', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ледяная стрела', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/act ледяная стрела'));
 
         expect(results).toEqual([{
             'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
@@ -183,7 +205,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок выбирает ударить щитом', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ударить щитом', chat: chat1} as any});
+        bot.processUpdate(getMessage(1, '/act ударить щитом'));
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'

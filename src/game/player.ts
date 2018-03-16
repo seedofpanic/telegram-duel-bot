@@ -29,6 +29,8 @@ export class Player {
             case 'маг':
                 this.character = new Mage();
                 break;
+            default:
+                throw new Error('Unexpected character name');
         }
 
         this.healthMax = this.character.getHealthMax();
