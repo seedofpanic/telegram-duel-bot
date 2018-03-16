@@ -23,7 +23,7 @@ describe('bot', () => {
                 options,
             });
         });
-        spyOn(Math, 'random').and.returnValue(2);
+        spyOn(Math, 'random').and.returnValue(0.5);
     });
 
     beforeEach(() => {
@@ -110,11 +110,11 @@ describe('bot', () => {
         }]);
     });
 
-    it('Второй игрок выбирает ледяную стрелу', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ледяная стрела', chat: chat2} as any});
+    it('Второй игрок выбирает огненный шар', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/act огненный шар', chat: chat2} as any});
 
         expect(results).toEqual([{
-            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
         }, {
             'chatId': '1',
             'options': {
@@ -123,7 +123,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 84/100 здоровья\nу противника 48/70 здоровья'
+            'text': 'у вас осталось 93/100 здоровья\nу противника 55/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -132,7 +132,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 84/100 здоровья\nу вас осталось 48/70 здоровья'
+            'text': 'у противника 93/100 здоровья\nу вас осталось 55/70 здоровья'
         }]);
     });
 
@@ -159,7 +159,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 73/100 здоровья\nу противника 19/70 здоровья'
+            'text': 'у вас осталось 82/100 здоровья\nу противника 41/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -168,7 +168,43 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 73/100 здоровья\nу вас осталось 19/70 здоровья'
+            'text': 'у противника 82/100 здоровья\nу вас осталось 41/70 здоровья'
+        }]);
+    });
+
+    it('Второй игрок выбирает ледяную стрелу', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/act ледяная стрела', chat: chat2} as any});
+
+        expect(results).toEqual([{
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
+        }, {
+            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить щитом', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/act ударить щитом', chat: chat1} as any});
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
+        }, {
+            'chatId': '1',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у вас осталось 56/100 здоровья\nу противника 27/70 здоровья'
+        }, {
+            'chatId': '2',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{'text': '/act огненный шар'}, {'text': '/act ледяная стрела'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у противника 56/100 здоровья\nу вас осталось 27/70 здоровья'
         }]);
     });
 });

@@ -12,9 +12,13 @@ export class HitAction extends Action {
         super(cooldown, maxCharges);
     }
 
-    perform(player: Player, target: Player): void {
-        target.decreaseHp(Game.calcDamage(this.minDamage, this.maxDamage), this.type);
+    perform(player: Player, target: Player) {
+        target.decreaseHp(this.calcDamage(), this.type);
 
         super.perform();
+    }
+
+    protected calcDamage(): number {
+        return Game.calcDamage(this.minDamage, this.maxDamage);
     }
 }
