@@ -15,6 +15,7 @@ describe('bot', () => {
     let chat2: TelegramBot.Chat;
 
     beforeAll(() => {
+        spyOn(console, 'log').and.callFake(msg => results.push(msg));
         spyOn(bot, 'sendMessage').and.callFake((chatId, text, options) => {
             results.push({
                 chatId,
@@ -118,11 +119,11 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 83.5/100 здоровья\nу противника 54.7/70 здоровья'
+            'text': 'у вас осталось 84/100 здоровья\nу противника 48/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -131,7 +132,43 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 83.5/100 здоровья\nу вас осталось 54.7/70 здоровья'
+            'text': 'у противника 84/100 здоровья\nу вас осталось 48/70 здоровья'
+        }]);
+    });
+
+    it('Второй игрок выбирает огненный шар', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/act огненный шар', chat: chat2} as any});
+
+        expect(results).toEqual([{
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
+        }, {
+            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить щитом', () => {
+        bot.processUpdate({update_id: 1, message: {text: '/act ударить щитом', chat: chat1} as any});
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
+        }, {
+            'chatId': '1',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у вас осталось 73/100 здоровья\nу противника 19/70 здоровья'
+        }, {
+            'chatId': '2',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{'text': '/act огненный шар'}, {'text': '/act ледяная стрела'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у противника 73/100 здоровья\nу вас осталось 19/70 здоровья'
         }]);
     });
 });

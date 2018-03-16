@@ -3,12 +3,13 @@ import {DamageTypes} from './models/damageTypes';
 import {Combat} from './combat';
 import {Effect} from './effect';
 import {HitAction} from './actions/hitAction';
+import {Sword} from './actions/swordHitAction';
 
 export class Player {
     currentCombat: Combat;
     healthMax: number;
     health: number;
-    availableActions: {[name: string]: Action};
+    actions: {[name: string]: Action};
     action: Action;
     isDead: boolean;
     character: string;
@@ -19,7 +20,7 @@ export class Player {
         [DamageTypes.FIRE]: 1,
         [DamageTypes.FROST]: 1,
     };
-    effects: Effect[];
+    effects: Effect[] = [];
 
     constructor(public chatId: string, character: string, public username: string) {
         this.character = character.toLowerCase();
@@ -27,7 +28,7 @@ export class Player {
         switch (this.character) {
             case 'варвар':
                 this.healthMax = 140;
-                this.availableActions = {
+                this.actions = {
                     'ударить рукой': new HitAction(5, 7, DamageTypes.BLUNT),
                     'ударить ногой': new HitAction(3, 9, DamageTypes.BLUNT),
                 };
@@ -38,8 +39,8 @@ export class Player {
                 break;
             case 'воин':
                 this.healthMax = 100;
-                this.availableActions = {
-                    'ударить мечем': new HitAction(5, 7, DamageTypes.CUTTING),
+                this.actions = {
+                    'ударить мечем': new Sword(5, 7, DamageTypes.CUTTING, 1),
                     'ударить щитом': new HitAction(3, 9, DamageTypes.BLUNT),
                 };
                 this.resists[DamageTypes.BLUNT] = 1.3;
@@ -49,7 +50,7 @@ export class Player {
                 break;
             case 'маг':
                 this.healthMax = 70;
-                this.availableActions = {
+                this.actions = {
                     'огненный шар': new HitAction(5, 7, DamageTypes.FIRE),
                     'ледяная стрела': new HitAction(3, 9, DamageTypes.FROST),
                 };
@@ -64,7 +65,7 @@ export class Player {
     }
 
     setAction(action: string) {
-        this.action = this.availableActions[action];
+        this.action = this.actions[action];
     }
 
     decreaseHp(damage: number, damageType: DamageTypes) {
@@ -86,27 +87,26 @@ export class Player {
         }
     }
 
-    getStatus(): string {
-        const percent = this.health / this.healthMax;
-
-        if (percent > 0.9) {
-            return 'чувствует себя отлично';
-        } else if (percent > 0.8) {
-            return 'чувствует поцарапан';
-        } else if (percent > 0.5) {
-            return 'потрепан';
-        } else if (percent > 0.2) {
-            return 'пошатывается';
-        } else if (percent > 0) {
-            return 'смертельно ранен';
-        }
-    }
-
     getResist(type: DamageTypes): number {
         return this.resists[type] || 1;
     }
 
     addEffect(effect: Effect) {
         this.effects.push(effect);
+    }
+
+    getName() {
+        return this.username || 'Интересная личность';
+    }
+
+    perform(target: Player) {
+        this.action.perform(this, target);
+        Object.keys(this.actions).forEach(key => {
+            this.actions[key].tick();
+        });
+        this.effects.forEach(effect => {
+            effect.tick(this);
+        });
+        this.action = undefined;
     }
 }

@@ -18,10 +18,8 @@ export class Combat {
     perform() {
         const ids = Object.keys(this.players);
 
-        this.players[ids[0]].action.perform(this.players[ids[0]], this.players[ids[1]]);
-        this.players[ids[1]].action.perform(this.players[ids[1]], this.players[ids[0]]);
-        this.players[ids[0]].action = undefined;
-        this.players[ids[1]].action = undefined;
+        this.players[ids[0]].perform(this.players[ids[1]]);
+        this.players[ids[1]].perform(this.players[ids[0]]);
 
         this.isEnded = Object.keys(this.players).some(key => this.players[key].isDead);
     }
@@ -41,9 +39,9 @@ export class Combat {
             const player = this.players[key];
 
             if (myId === player.chatId.toString()) {
-                return `у вас осталось ${player.health}/${player.healthMax} здоровья`;
+                return `у вас осталось ${Math.ceil(player.health)}/${Math.ceil(player.healthMax)} здоровья`;
             } else {
-                return `у противника ${player.health}/${player.healthMax} здоровья`;
+                return `у противника ${Math.ceil(player.health)}/${Math.ceil(player.healthMax)} здоровья`;
             }
         }).join('\n');
     }
@@ -64,13 +62,15 @@ export class Combat {
     getVsMessage(): string {
         const players = this.playersArr;
 
-        return `${players[0].username} vs ${players[1].username}`;
+        return `${players[0].getName()} vs ${players[1].getName()}`;
     }
 
     getActions(player: Player) {
         return {reply_markup: {
                 keyboard: [
-                    Object.keys(player.availableActions).map(action => ({text: '/act ' + action}))
+                    Object.keys(player.actions)
+                        .filter(action => player.actions[action].isAvailable())
+                        .map(action => ({text: '/act ' + action}))
                 ],
                 one_time_keyboard: true
             }};
