@@ -1,10 +1,5 @@
-import {TelegramBotWithLogs} from './logs';
 import * as TelegramBot from 'node-telegram-bot-api';
 
-export let bot: TelegramBot;
+const mode = process.env['MODE'];
 
-if (process.env['DEBUG']) {
-    bot = new TelegramBotWithLogs(process.env['TOKEN'], {polling: process.env['MODE'] !== 'test'});
-} else {
-    bot = new TelegramBot(process.env['TOKEN'], {polling: process.env['MODE'] !== 'test'});
-}
+export const bot = new TelegramBot(process.env['TOKEN'], {polling: mode !== 'test'});

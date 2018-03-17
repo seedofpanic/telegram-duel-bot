@@ -14,7 +14,8 @@ export class DotEffect extends Effect {
 
     tick(player: Player) {
 
-        player.decreaseHp(Game.calcDamage(this.minDamage, this.maxDamage), this.type);
+        player.decreaseHp(Game.calcDamage(this.minDamage, this.maxDamage)
+            * player.getResist(this.type));
 
         return super.tick(player);
     }

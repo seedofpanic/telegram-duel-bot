@@ -7,6 +7,10 @@ export abstract class Effect {
     tick(player: Player): boolean {
         this.roundsCount--;
 
+        if (this.roundsCount <= 0) {
+            player.effects.splice(player.effects.indexOf(this));
+        }
+
         return this.roundsCount > 0;
     }
 }

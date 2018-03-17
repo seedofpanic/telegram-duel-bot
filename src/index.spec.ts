@@ -1,8 +1,30 @@
 import './index';
 import {bot} from './game/bot';
 import * as TelegramBot from 'node-telegram-bot-api';
+import {Chat} from 'node-telegram-bot-api';
+import {User} from 'node-telegram-bot-api';
 
 bot.stopPolling();
+
+let updateId = 0;
+
+function getMessage(chatId: number, text: string): TelegramBot.Update {
+    updateId++;
+
+    return {
+        update_id: updateId,
+        message: {
+            message_id: updateId,
+            date: 0,
+            text,
+            chat: {
+                id: chatId,
+                type: 'chat',
+                username: 'username' + chatId,
+            }
+        }
+    };
+}
 
 describe('bot', () => {
 
@@ -15,6 +37,7 @@ describe('bot', () => {
     let chat2: TelegramBot.Chat;
 
     beforeAll(() => {
+        spyOn(console, 'log').and.callFake(msg => results.push(msg));
         spyOn(bot, 'sendMessage').and.callFake((chatId, text, options) => {
             results.push({
                 chatId,
@@ -22,7 +45,7 @@ describe('bot', () => {
                 options,
             });
         });
-        spyOn(Math, 'random').and.returnValue(2);
+        spyOn(Math, 'random').and.returnValue(0.5);
     });
 
     beforeEach(() => {
@@ -40,7 +63,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок сообщил что готов', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов', chat: chat1} as any});
+        bot.processUpdate(getMessage(1, '/готов'));
 
         expect(results).toEqual([{
             'chatId': '1',
@@ -55,7 +78,7 @@ describe('bot', () => {
     });
 
     it('Первый игрок сообщил что готов играть за Воина', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов Воин', chat: chat1} as any});
+        bot.processUpdate(getMessage(1,'/готов Воин'));
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Ожидаем противника'
@@ -63,7 +86,7 @@ describe('bot', () => {
     });
 
     it('Второй игрок сообщил что готов', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/готов'));
         expect(results).toEqual([{
             'chatId': '2',
             'options': {
@@ -77,16 +100,17 @@ describe('bot', () => {
     });
 
     it('Второй игрок сообщил что готов играть за Мага', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/готов Маг', chat: chat2} as any});
+        bot.processUpdate(getMessage(2, '/готов Маг'));
         expect(results).toEqual([{
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act рассечь"},
+                        {'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nuser 1 vs user 2'
+            'text': 'Противник найден\nusername1 vs username2'
         }, {
             'chatId': '2',
             'options': {
@@ -95,34 +119,34 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nuser 1 vs user 2'
+            'text': 'Противник найден\nusername1 vs username2'
         }]);
     });
 
-    it('Первый игрок выбирает ударить мечем', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ударить мечем', chat: chat1} as any});
+    it('Первый игрок выбирает рассечь', () => {
+        bot.processUpdate(getMessage(1, '/act рассечь'));
 
         expect(results).toEqual([{
-            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить рассечь'
         }, {
             'chatId': '1', 'options': undefined, 'text': 'ожидаем противника'
         }]);
     });
 
-    it('Второй игрок выбирает ледяную стрелу', () => {
-        bot.processUpdate({update_id: 1, message: {text: '/act ледяная стрела', chat: chat2} as any});
+    it('Второй игрок выбирает огненный шар', () => {
+        bot.processUpdate(getMessage(2, '/act огненный шар'));
 
         expect(results).toEqual([{
-            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
         }, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act ударить мечем"}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 83.5/100 здоровья\nу противника 54.7/70 здоровья'
+            'text': 'у вас осталось 93/100 здоровья\nу противника 55/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -131,7 +155,82 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 83.5/100 здоровья\nу вас осталось 54.7/70 здоровья'
+            'text': 'у противника 93/100 здоровья\nу вас осталось 55/70 здоровья'
+        }]);
+    });
+
+    it('Второй игрок выбирает огненный шар', () => {
+        bot.processUpdate(getMessage(2, '/act огненный шар'));
+
+        expect(results).toEqual([{
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
+        }, {
+            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить щитом', () => {
+        bot.processUpdate(getMessage(1, '/act ударить щитом'));
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
+        }, {
+            'chatId': '1',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{"text": "/act рассечь"}, {'text': '/act ударить мечем'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у вас осталось 82/100 здоровья\nу противника 46/70 здоровья'
+        }, {
+            'chatId': '2',
+            'options': {},
+            'text': 'у противника 82/100 здоровья\nу вас осталось 46/70 здоровья'
+        }]);
+    });
+
+    it('Второй игрок выбирает ледяную стрелу', () => {
+        bot.processUpdate(getMessage(2, '/act ледяная стрела'));
+
+        expect(results).toEqual([{
+            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
+        }, {
+            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить щитом, но это действие не доступно', () => {
+        bot.processUpdate(getMessage(1, '/act ударить щитом'));
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, "text": "Действие ударить щитом сейчас не доступно"
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить мечем второй раз', () => {
+        bot.processUpdate(getMessage(1, '/act ударить мечем'));
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
+        }, {
+            'chatId': '1',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{"text": "/act рассечь"}, {"text": "/act ударить мечем"}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у вас осталось 62/100 здоровья\nу противника 36/70 здоровья'
+        }, {
+            'chatId': '2',
+            'options': {
+                'reply_markup': {
+                    'keyboard': [[{'text': '/act огненный шар'}, {'text': '/act ледяная стрела'}]],
+                    'one_time_keyboard': true
+                }
+            },
+            'text': 'у противника 62/100 здоровья\nу вас осталось 36/70 здоровья'
         }]);
     });
 });

@@ -58,9 +58,15 @@ bot.onText(/^\/act (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
     const player = game.players[chatId];
 
-    bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
-
     try {
+        if (player.actions[match[1]].isAvailable()) {
+            bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
+        } else {
+            bot.sendMessage(chatId, `Действие ${match[1]} сейчас не доступно`);
+
+            return;
+        }
+
         player.setAction(match[1]);
 
         if (player.currentCombat.allReady()) {
@@ -78,7 +84,9 @@ bot.onText(/^\/start$/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Приветствую на Арене! Пиши /готов и вступай в бой!');
 });
 
-const infoTexts: any = {
+type Mixed<T = string> = {[name: string]: string | T};
+
+const infoTexts: Mixed<Mixed<string>> = {
     'ударить': {
         'рукой': 'рукой: усойчив, ногой: нормально',
         'ногой': 'рукой: не устойчив, ногой: нормально',
@@ -95,7 +103,7 @@ bot.onText(/^\/инфо (.+)/, (msg, match) => {
 
     const result = path.reduce((res, sub) => {
         if (res) {
-            return res[sub];
+            return res[sub] as Mixed;
         } else {
             return undefined;
         }

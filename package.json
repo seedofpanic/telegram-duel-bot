@@ -1,19 +1,16 @@
 {
   "name": "telegram-duel-bot",
-  "bin": {
-    "jest": "/.bin/jest"
-  },
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/ts-node src/index.ts",
-    "start:prod": "node_modules/.bin/forever start node_modules/.bin/ts-node src/index.ts",
-    "stop:prod": "node_modules/.bin/forever stop node_modules/.bin/ts-node",
-    "test": "export MODE=test && node_modules/.bin/jest",
+    "start": "ts-node src/index.ts",
+    "start:prod": "forever start ts-node src/index.ts",
+    "stop:prod": "forever stop ts-node",
+    "test": "export MODE=test && jest",
     "wintest": "set MODE=test && jest",
-    "testci": "export MODE=test && node_modules/.bin/jest --runInBand",
-    "lint": "node_modules/.bin/tslint \"src/**/*.ts\""
+    "testci": "export MODE=test && jest --runInBand",
+    "lint": "tslint \"src/**/*.ts\""
   },
   "author": "",
   "license": "ISC",
