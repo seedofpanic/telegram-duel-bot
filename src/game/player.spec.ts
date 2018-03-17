@@ -9,29 +9,20 @@ describe('Player', () => {
     });
 
     describe('decreaseHp', () => {
-        it('with no resist', () => {
+        it('normal damage', () => {
             player.health = 30;
             player.resists[DamageTypes.CUTTING] = 1;
 
-            player.decreaseHp(10, DamageTypes.CUTTING);
+            player.decreaseHp(10);
 
             expect(player.health).toBe(20);
-        });
-
-        it('with 0.7 resist', () => {
-            player.health = 30;
-            player.resists[DamageTypes.CUTTING] = 0.7;
-
-            player.decreaseHp(10, DamageTypes.CUTTING);
-
-            expect(player.health).toBe(23);
         });
 
         it('health never goes lower than 0', () => {
             player.health = 5;
             player.resists[DamageTypes.CUTTING] = 1;
 
-            player.decreaseHp(10, DamageTypes.CUTTING);
+            player.decreaseHp(10);
 
             expect(player.health).toBe(0);
         });
@@ -41,7 +32,7 @@ describe('Player', () => {
             player.resists[DamageTypes.CUTTING] = 1;
             player.isDead = false;
 
-            player.decreaseHp(10, DamageTypes.CUTTING);
+            player.decreaseHp(10);
 
             expect(player.isDead).toBe(true);
         });

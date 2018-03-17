@@ -9,7 +9,7 @@ export class Sword extends HitAction {
                 type: DamageTypes,
                 cooldown = 0,
                 maxCharges = 1) {
-        super(minDamage, maxDamage, type, cooldown, maxCharges);
+        super(minDamage, maxDamage, type, 0.1, 2, cooldown, maxCharges);
     }
 
     perform(player: Player, target: Player): void {

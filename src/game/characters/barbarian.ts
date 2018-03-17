@@ -10,8 +10,8 @@ export class Barbarian extends Character {
 
     getActions(): { [p: string]: Action } {
         return {
-            'ударить рукой': new HitAction(5, 7, DamageTypes.BLUNT),
-            'ударить ногой': new HitAction(3, 9, DamageTypes.BLUNT),
+            'ударить рукой': new HitAction(5, 7, DamageTypes.BLUNT, 0.1, 1.5),
+            'ударить ногой': new HitAction(3, 9, DamageTypes.BLUNT, 0.2, 3),
         };
     }
 

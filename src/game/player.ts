@@ -43,11 +43,9 @@ export class Player {
         this.action = this.actions[action];
     }
 
-    decreaseHp(damage: number, damageType: DamageTypes) {
-        const pureDamage = damage * this.getResist(damageType);
-
-        if (this.health > pureDamage) {
-            this.health -= pureDamage;
+    decreaseHp(damage: number) {
+        if (this.health > damage) {
+            this.health -= damage;
         } else {
             this.health = 0;
             this.isDead = true;

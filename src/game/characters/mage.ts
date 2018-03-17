@@ -11,8 +11,8 @@ export class Mage extends Character {
 
     getActions(): { [p: string]: Action } {
         return {
-            'огненный шар': new FireBallAction(5, 7, DamageTypes.FIRE),
-            'ледяная стрела': new FrostArrowAction(3, 9, DamageTypes.FROST),
+            'огненный шар': new FireBallAction(5, 7, DamageTypes.FIRE, 0.3, 3),
+            'ледяная стрела': new FrostArrowAction(3, 9, DamageTypes.FROST, 0.1, 1.5),
         };
     }
 
