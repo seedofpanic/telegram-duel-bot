@@ -5,7 +5,8 @@ describe('Player', () => {
     let player: Player;
 
     beforeEach(() => {
-        player = new Player('1', 'воин', 'testname');
+        player = new Player('1', 'testname');
+        player.setCharacter('воин');
     });
 
     describe('decreaseHp', () => {

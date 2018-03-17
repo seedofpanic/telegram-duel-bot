@@ -3,6 +3,8 @@ import {Combat} from './game/combat';
 import {bot} from './game/bot';
 
 const game = new Game();
+let combatsCount = 0;
+let combatsEnded = 0;
 
 bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
     const chatId = msg.chat.id.toString();
@@ -19,8 +21,10 @@ bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
     }
 
     if (!player) {
-        player = game.addPlayer(chatId, match[1], msg.chat.username);
+        player = game.addPlayer(chatId, msg.chat.username);
     }
+
+    player.setCharacter(match[1]);
 
     if (player.currentCombat) {
         bot.sendMessage(chatId, 'Вы уже ожидаете противника, напишите /стоп для выхода из очереди');
@@ -38,6 +42,7 @@ bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
     } else {
         const combat: Combat = game.combats.shift();
 
+        combatsCount++;
         combat.addPlayer(player);
         player.currentCombat = combat;
         combat.start();
@@ -72,6 +77,10 @@ bot.onText(/^\/act (.+)/, (msg, match) => {
         if (player.currentCombat.allReady()) {
             player.currentCombat.perform();
             player.currentCombat.showResult();
+
+            if (player.currentCombat.isEnded) {
+                combatsEnded++;
+            }
         } else {
             bot.sendMessage(chatId, 'ожидаем противника');
         }
@@ -84,32 +93,9 @@ bot.onText(/^\/start$/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Приветствую на Арене! Пиши /готов и вступай в бой!');
 });
 
-type Mixed<T = string> = {[name: string]: string | T};
-
-const infoTexts: Mixed<Mixed<string>> = {
-    'ударить': {
-        'рукой': 'рукой: усойчив, ногой: нормально',
-        'ногой': 'рукой: не устойчив, ногой: нормально',
-    }
-};
-
-bot.onText(/^\/инфо (.+)/, (msg, match) => {
+bot.onText(/^\/инфо/, (msg) => {
     const chatId = msg.chat.id.toString();
-    const path = match[1].split(' ');
 
-    if (path.length > 16) {
-        return;
-    }
-
-    const result = path.reduce((res, sub) => {
-        if (res) {
-            return res[sub] as Mixed;
-        } else {
-            return undefined;
-        }
-    }, infoTexts);
-
-    if (typeof result === 'string') {
-        bot.sendMessage(chatId, result);
-    }
+    bot.sendMessage(chatId,
+        `Боев сыграно ${combatsEnded} В данный момент идет ${combatsCount - combatsEnded} боев`);
 });

@@ -18,25 +18,7 @@ export class Player {
     effects: Effect[] = [];
     character: Character;
 
-    constructor(public chatId: string, characterName: string, public username: string) {
-        switch (characterName.toLowerCase()) {
-            case 'варвар':
-                this.character = new Barbarian();
-                break;
-            case 'воин':
-                this.character = new Warrior();
-                break;
-            case 'маг':
-                this.character = new Mage();
-                break;
-            default:
-                throw new Error('Unexpected character name');
-        }
-
-        this.healthMax = this.character.getHealthMax();
-        this.health = this.healthMax;
-        this.actions = this.character.getActions();
-        this.resists = this.character.getResists();
+    constructor(public chatId: string, public username: string) {
     }
 
     setAction(action: string) {
@@ -84,5 +66,26 @@ export class Player {
         this.effects.forEach(effect => {
             effect.tick(this);
         });
+    }
+
+    setCharacter(characterName: string) {
+        switch (characterName.toLowerCase()) {
+            case 'варвар':
+                this.character = new Barbarian();
+                break;
+            case 'воин':
+                this.character = new Warrior();
+                break;
+            case 'маг':
+                this.character = new Mage();
+                break;
+            default:
+                throw new Error('Unexpected character name');
+        }
+
+        this.healthMax = this.character.getHealthMax();
+        this.health = this.healthMax;
+        this.actions = this.character.getActions();
+        this.resists = this.character.getResists();
     }
 }

@@ -28,6 +28,8 @@ export class Combat {
         Object.keys(this.players).forEach(id => {
             if (this.isEnded) {
                 bot.sendMessage(id, this.getDeadResult(id));
+
+                this.players[id].currentCombat = undefined;
             } else {
                 bot.sendMessage(id, this.getRoundResult(id), this.getActions(this.players[id]));
             }
