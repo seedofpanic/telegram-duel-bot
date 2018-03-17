@@ -1,5 +1,6 @@
 # telegtam-duel-bot
 Бот позволяющий двум игрокам выбрать персонажей и сразиться против друг друга
+Попробовать бота можно тут: [@mobmindbot](http://telegram.me/mobmindbot)
 ## Changelog
 ### 0.1.0
 - Добавлена механика состояний (dot, hot, status)
