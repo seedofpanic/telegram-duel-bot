@@ -66,6 +66,10 @@ export class Combat {
     }
 
     getActions(player: Player) {
+        if (player.action) {
+            return {};
+        }
+
         return {reply_markup: {
                 keyboard: [
                     Object.keys(player.actions)

@@ -58,9 +58,15 @@ bot.onText(/^\/act (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
     const player = game.players[chatId];
 
-    bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
-
     try {
+        if (player.actions[match[1]].isAvailable()) {
+            bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
+        } else {
+            bot.sendMessage(chatId, `Действие ${match[1]} сейчас не доступно`);
+
+            return;
+        }
+
         player.setAction(match[1]);
 
         if (player.currentCombat.allReady()) {

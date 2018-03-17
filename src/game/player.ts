@@ -74,12 +74,15 @@ export class Player {
 
     perform(target: Player) {
         this.action.perform(this, target);
+
         Object.keys(this.actions).forEach(key => {
             this.actions[key].tick();
         });
+
+        this.action = undefined;
+
         this.effects.forEach(effect => {
             effect.tick(this);
         });
-        this.action = undefined;
     }
 }

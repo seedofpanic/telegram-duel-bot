@@ -105,7 +105,8 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act рассечь"},
+                        {'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
@@ -122,11 +123,11 @@ describe('bot', () => {
         }]);
     });
 
-    it('Первый игрок выбирает ударить мечем', () => {
-        bot.processUpdate(getMessage(1, '/act ударить мечем'));
+    it('Первый игрок выбирает рассечь', () => {
+        bot.processUpdate(getMessage(1, '/act рассечь'));
 
         expect(results).toEqual([{
-            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить рассечь'
         }, {
             'chatId': '1', 'options': undefined, 'text': 'ожидаем противника'
         }]);
@@ -141,7 +142,7 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act ударить мечем"}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
@@ -177,20 +178,15 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act рассечь"}, {'text': '/act ударить мечем'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 82/100 здоровья\nу противника 41/70 здоровья'
+            'text': 'у вас осталось 82/100 здоровья\nу противника 46/70 здоровья'
         }, {
             'chatId': '2',
-            'options': {
-                'reply_markup': {
-                    'keyboard': [[{'text': '/act огненный шар'}, {'text': '/act ледяная стрела'}]],
-                    'one_time_keyboard': true
-                }
-            },
-            'text': 'у противника 82/100 здоровья\nу вас осталось 41/70 здоровья'
+            'options': {},
+            'text': 'у противника 82/100 здоровья\nу вас осталось 46/70 здоровья'
         }]);
     });
 
@@ -204,20 +200,28 @@ describe('bot', () => {
         }]);
     });
 
-    it('Первый игрок выбирает ударить щитом', () => {
+    it('Первый игрок выбирает ударить щитом, но это действие не доступно', () => {
         bot.processUpdate(getMessage(1, '/act ударить щитом'));
 
         expect(results).toEqual([{
-            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
+            'chatId': '1', 'options': undefined, "text": "Действие ударить щитом сейчас не доступно"
+        }]);
+    });
+
+    it('Первый игрок выбирает ударить мечем второй раз', () => {
+        bot.processUpdate(getMessage(1, '/act ударить мечем'));
+
+        expect(results).toEqual([{
+            'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
         }, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{"text": "/act рассечь"}, {"text": "/act ударить мечем"}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 56/100 здоровья\nу противника 27/70 здоровья'
+            'text': 'у вас осталось 62/100 здоровья\nу противника 36/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -226,7 +230,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 56/100 здоровья\nу вас осталось 27/70 здоровья'
+            'text': 'у противника 62/100 здоровья\nу вас осталось 36/70 здоровья'
         }]);
     });
 });
