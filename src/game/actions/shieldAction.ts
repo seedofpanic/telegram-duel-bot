@@ -4,9 +4,22 @@ import {Player} from '../player';
 import {StunEffect} from '../effects/stunEffect';
 import {CuttingEffect} from '../effects/cuttingEffect';
 
+const MIN_DAMAGE = 3;
+const MAX_DAMAGE = 9;
+const CRIT_CHANCE = 0;
+const CRIT_MULTIPLIER = 1;
+const COOLDOWN = 2;
+
 export class ShieldAction extends HitAction {
     constructor() {
-        super(3, 9, DamageTypes.BLUNT, 0, 1, 2);
+        super(
+            MIN_DAMAGE,
+            MAX_DAMAGE,
+            DamageTypes.BLUNT,
+            CRIT_CHANCE,
+            CRIT_MULTIPLIER,
+            COOLDOWN
+        );
     }
 
     perform(player: Player, target: Player) {
