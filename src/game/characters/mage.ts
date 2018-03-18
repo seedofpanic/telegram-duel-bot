@@ -5,6 +5,10 @@ import {DamageTypes} from '../models/damageTypes';
 import {Action} from '../action';
 
 export class Mage extends Character {
+    getName(): string {
+        return 'Маг';
+    }
+
     getHealthMax(): number {
         return 70;
     }

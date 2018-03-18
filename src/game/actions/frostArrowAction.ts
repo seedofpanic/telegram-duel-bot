@@ -2,7 +2,9 @@ import {HitAction} from './hitAction';
 import {Player} from '../player';
 import {BurningDotEffect} from '../effects/burningDotEffect';
 import {DamageTypes} from '../models/damageTypes';
+import {Combat} from '../combat';
 
+const NAME = 'Ледяная стрела';
 const MIN_DAMAGE = 3;
 const MAX_DAMAGE = 9;
 const CRIT_CHANCE = 0.1;
@@ -13,6 +15,7 @@ export class FrostArrowAction extends HitAction {
 
     constructor() {
         super(
+            NAME,
             MIN_DAMAGE,
             MAX_DAMAGE,
             DamageTypes.FROST,
@@ -21,14 +24,14 @@ export class FrostArrowAction extends HitAction {
         );
     }
 
-    perform(player: Player, target: Player) {
+    perform(combat: Combat, player?: Player, target?: Player) {
         const oldEffects = target.effects;
 
         target.effects = oldEffects.filter(effect => !(effect instanceof BurningDotEffect));
 
         this.mod = oldEffects.length - target.effects.length;
 
-        super.perform(player, target);
+        super.perform(combat, player, target);
     }
 
     protected calcDamage(): number {

@@ -4,14 +4,18 @@ import {HitAction} from '../actions/hitAction';
 import {DamageTypes} from '../models/damageTypes';
 
 export class Barbarian extends Character {
+    getName(): string {
+        return 'Варвар';
+    }
+
     getHealthMax(): number {
         return 140;
     }
 
     getActions(): { [p: string]: Action } {
         return {
-            'ударить рукой': new HitAction(5, 7, DamageTypes.BLUNT, 0.1, 1.5),
-            'ударить ногой': new HitAction(3, 9, DamageTypes.BLUNT, 0.2, 3),
+            'ударить рукой': new HitAction('Удар рукой', 5, 7, DamageTypes.BLUNT, 0.1, 1.5),
+            'ударить ногой': new HitAction('Удар ногой', 3, 9, DamageTypes.BLUNT, 0.2, 3),
         };
     }
 

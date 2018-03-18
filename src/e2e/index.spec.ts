@@ -1,30 +1,9 @@
-import './index';
-import {bot} from './game/bot';
+import '../index';
+import {bot} from '../game/bot';
 import * as TelegramBot from 'node-telegram-bot-api';
-import {Chat} from 'node-telegram-bot-api';
-import {User} from 'node-telegram-bot-api';
+import {getMessage} from './helpers';
 
 bot.stopPolling();
-
-let updateId = 0;
-
-function getMessage(chatId: number, text: string): TelegramBot.Update {
-    updateId++;
-
-    return {
-        update_id: updateId,
-        message: {
-            message_id: updateId,
-            date: 0,
-            text,
-            chat: {
-                id: chatId,
-                type: 'chat',
-                username: 'username' + chatId,
-            }
-        }
-    };
-}
 
 describe('bot', () => {
 
@@ -69,7 +48,11 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'},
+                        {'text': '/готов Воин'},
+                        {'text': '/готов Маг'},
+                        {'text': '/готов Вампир'},
+                    ]],
                     'one_time_keyboard': true
                 }
             },
@@ -91,7 +74,11 @@ describe('bot', () => {
             'chatId': '2',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'},
+                            {'text': '/готов Воин'},
+                            {'text': '/готов Маг'},
+                            {'text': '/готов Вампир'}
+                        ]],
                     'one_time_keyboard': true
                 }
             },
@@ -105,12 +92,12 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{"text": "/act рассечь"},
+                    'keyboard': [[{'text': '/act рассечь'},
                         {'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nusername1 vs username2'
+            'text': 'Противник найден\nВоин vs Маг'
         }, {
             'chatId': '2',
             'options': {
@@ -119,7 +106,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nusername1 vs username2'
+            'text': 'Противник найден\nВоин vs Маг'
         }]);
     });
 
@@ -138,15 +125,27 @@ describe('bot', () => {
 
         expect(results).toEqual([{
             'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'
+        }, {'chatId': '1', 'options': undefined, 'text': 'Рассечение наносит 11 урона' +
+            '\nРассечение накладывает эффек Кровотечение' +
+            '\nОгненный шар наносит 8 урона' +
+            '\nОгненный шар накладывает эффек Горение' +
+            '\nГорение наносит 4 урона' +
+            '\nКровотечение наносит 6 урона'
         }, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{"text": "/act ударить мечем"}, {'text': '/act ударить щитом'}]],
+                    'keyboard': [[{'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 93/100 здоровья\nу противника 55/70 здоровья'
+            'text': 'у вас осталось 90/100 здоровья\nу противника 55/70 здоровья'
+        }, {'chatId': '2', 'options': undefined, 'text': 'Рассечение наносит 11 урона' +
+            '\nРассечение накладывает эффек Кровотечение' +
+            '\nОгненный шар наносит 8 урона' +
+            '\nОгненный шар накладывает эффек Горение' +
+            '\nГорение наносит 4 урона' +
+            '\nКровотечение наносит 6 урона'
         }, {
             'chatId': '2',
             'options': {
@@ -155,7 +154,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 93/100 здоровья\nу вас осталось 55/70 здоровья'
+            'text': 'у противника 90/100 здоровья\nу вас осталось 55/70 здоровья'
         }]);
     });
 
@@ -174,19 +173,31 @@ describe('bot', () => {
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить щитом'
+        }, {'chatId': '1', 'options': undefined, 'text': 'Удар щитом наносит 9 урона' +
+            '\nУдар щитом накладывает эффек Оглушение' +
+            '\nОгненный шар наносит 8 урона' +
+            '\nОгненный шар накладывает эффек Горение' +
+            '\nГорение наносит 4 урона' +
+            '\nГорение наносит 4 урона'
         }, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{"text": "/act рассечь"}, {'text': '/act ударить мечем'}]],
+                    'keyboard': [[{'text': '/act рассечь'}, {'text': '/act ударить мечем'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 82/100 здоровья\nу противника 46/70 здоровья'
+            'text': 'у вас осталось 75/100 здоровья\nу противника 46/70 здоровья'
+        }, {'chatId': '2', 'options': undefined, 'text': 'Удар щитом наносит 9 урона' +
+            '\nУдар щитом накладывает эффек Оглушение' +
+            '\nОгненный шар наносит 8 урона' +
+            '\nОгненный шар накладывает эффек Горение' +
+            '\nГорение наносит 4 урона' +
+            '\nГорение наносит 4 урона'
         }, {
             'chatId': '2',
             'options': {},
-            'text': 'у противника 82/100 здоровья\nу вас осталось 46/70 здоровья'
+            'text': 'у противника 75/100 здоровья\nу вас осталось 46/70 здоровья'
         }]);
     });
 
@@ -194,9 +205,7 @@ describe('bot', () => {
         bot.processUpdate(getMessage(2, '/act ледяная стрела'));
 
         expect(results).toEqual([{
-            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
-        }, {
-            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+            'chatId': '2', 'options': undefined, 'text': 'Действие уже выбрано'
         }]);
     });
 
@@ -204,7 +213,7 @@ describe('bot', () => {
         bot.processUpdate(getMessage(1, '/act ударить щитом'));
 
         expect(results).toEqual([{
-            'chatId': '1', 'options': undefined, "text": "Действие ударить щитом сейчас не доступно"
+            'chatId': '1', 'options': undefined, 'text': 'Действие ударить щитом сейчас не доступно'
         }]);
     });
 
@@ -213,15 +222,19 @@ describe('bot', () => {
 
         expect(results).toEqual([{
             'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'
+        }, {'chatId': '1', 'options': undefined, 'text': 'Удар мечем наносит 11 урона' +
+            '\nГорение наносит 4 урона'
         }, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{"text": "/act рассечь"}, {"text": "/act ударить мечем"}]],
+                    'keyboard': [[{'text': '/act рассечь'}, {'text': '/act ударить мечем'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 62/100 здоровья\nу противника 36/70 здоровья'
+            'text': 'у вас осталось 72/100 здоровья\nу противника 36/70 здоровья'
+        }, {'chatId': '2', 'options': undefined, 'text': 'Удар мечем наносит 11 урона' +
+            '\nГорение наносит 4 урона'
         }, {
             'chatId': '2',
             'options': {
@@ -230,7 +243,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 62/100 здоровья\nу вас осталось 36/70 здоровья'
+            'text': 'у противника 72/100 здоровья\nу вас осталось 36/70 здоровья'
         }]);
     });
 });

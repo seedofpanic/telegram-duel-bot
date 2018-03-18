@@ -16,7 +16,11 @@ describe('Game', () => {
         expect(bot.sendMessage).toBeCalledWith('1', 'выберите персонажа',
             {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'},
+                        {'text': '/готов Воин'},
+                        {'text': '/готов Маг'},
+                        {'text': '/готов Вампир'},
+                    ]],
                     'one_time_keyboard': true
                 }
             });
@@ -46,7 +50,7 @@ describe('Game', () => {
 
     describe('addPlayer', () => {
         it('Верно добавляет пользователя в игру', () => {
-            const player = game.addPlayer('1', 'Воин', 'test');
+            const player = game.addPlayer('1', 'test');
 
             expect(game.players['1']).toBe(player);
         });
@@ -54,7 +58,7 @@ describe('Game', () => {
 
     describe('getPlayer', () => {
         it('Если пользователь есть в игре, возвращает его', () => {
-            const player = game.addPlayer('1', 'Воин', 'test');
+            const player = game.addPlayer('1', 'test');
 
             expect(game.getPlayer('1')).toBe(player);
         });

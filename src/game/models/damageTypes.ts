@@ -1,7 +1,8 @@
 export enum DamageTypes {
+    SHADOW,
     BLUNT,
     CUTTING,
-    PIRCING,
+    PIERCING,
     FIRE,
     FROST,
 }

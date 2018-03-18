@@ -4,16 +4,17 @@ import {DamageTypes} from '../models/damageTypes';
 import {Game} from '../game';
 
 export class HotEffect extends Effect {
-    constructor(private minHeal: number,
+    constructor(name: string,
+                private minHeal: number,
                 private maxHeal: number,
                 private type: DamageTypes,
                 roundsCount: number,
     ) {
-        super(roundsCount);
+        super(name, roundsCount);
     }
 
     tick(player: Player): boolean {
-        player.increaseHp(Game.calcDamage(this.minHeal, this.maxHeal));
+        player.increaseHp(this, Game.calcDamage(this.minHeal, this.maxHeal));
         return super.tick(player);
     }
 }

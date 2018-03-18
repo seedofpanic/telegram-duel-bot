@@ -2,7 +2,9 @@ import {Player} from '../player';
 import {DamageTypes} from '../models/damageTypes';
 import {HitAction} from './hitAction';
 import {CuttingEffect} from '../effects/cuttingEffect';
+import {Combat} from '../combat';
 
+const NAME = 'Рассечение';
 const MIN_DAMAGE = 5;
 const MAX_DAMAGE = 7;
 const CRIT_CHANCE = 0.1;
@@ -16,13 +18,13 @@ const CUTTING_EFFECT_ROUNDS_COUNT = 3;
 
 export class SwordCuttingAction extends HitAction {
     constructor() {
-        super(MIN_DAMAGE, MAX_DAMAGE, DamageTypes.CUTTING, CRIT_CHANCE, CRIT_MULTIPLIER, COOLDOWN, MAX_CHARGES);
+        super(NAME, MIN_DAMAGE, MAX_DAMAGE, DamageTypes.CUTTING, CRIT_CHANCE, CRIT_MULTIPLIER, COOLDOWN, MAX_CHARGES);
     }
 
-    perform(player: Player, target: Player): void {
-        super.perform(player, target);
+    perform(combat: Combat, player?: Player, target?: Player) {
+        super.perform(combat, player, target);
 
-        target.addEffect(new CuttingEffect(
+        target.addEffect(this, new CuttingEffect(
             CUTTING_EFFECT_MIN_DAMAGE,
             CUTTING_EFFECT_MAX_DAMAGE,
             DamageTypes.CUTTING,

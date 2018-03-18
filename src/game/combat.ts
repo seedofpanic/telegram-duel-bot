@@ -4,6 +4,7 @@ import {bot} from './bot';
 export class Combat {
     players: {[name: string]: Player} = {};
     isEnded = false;
+    battleLog: string[] = [];
 
     get playersArr(): Player[] {
         return Object.keys(this.players).map(key => this.players[key]);
@@ -20,12 +21,16 @@ export class Combat {
 
         this.players[ids[0]].perform(this.players[ids[1]]);
         this.players[ids[1]].perform(this.players[ids[0]]);
+        this.players[ids[0]].tick();
+        this.players[ids[1]].tick();
 
         this.isEnded = Object.keys(this.players).some(key => this.players[key].isDead);
     }
 
     showResult() {
         Object.keys(this.players).forEach(id => {
+            bot.sendMessage(id, this.battleLog.join('\n'));
+
             if (this.isEnded) {
                 bot.sendMessage(id, this.getDeadResult(id));
 
@@ -34,6 +39,8 @@ export class Combat {
                 bot.sendMessage(id, this.getRoundResult(id), this.getActions(this.players[id]));
             }
         });
+
+        this.battleLog.length = 0;
     }
 
     getRoundResult(myId: string): string {
@@ -58,7 +65,7 @@ export class Combat {
                         return 'Ваш противник побежден, игра окончена';
                     }
                 }
-            }).join('\n');
+            }).join('');
     }
 
     getVsMessage(): string {
@@ -91,5 +98,16 @@ export class Combat {
 
     addPlayer(player: Player) {
         this.players[player.chatId] = player;
+    }
+
+    isFull() {
+        return Object.keys(this.players).length === 2;
+    }
+
+    isReadyToStart(): boolean {
+        return this.isFull() &&
+            Object.keys(this.players).every(id => {
+                return !!this.players[id].character;
+            });
     }
 }
