@@ -1,10 +1,12 @@
 import {Player} from './player';
+import {DamageTypes} from './models/damageTypes';
+import {Combat} from './combat';
 
-export class Action {
+export abstract class Action {
     charges: number;
     recharge = 0;
 
-    constructor(private cooldown = 0, private maxCharges = 1) {
+    constructor(public name: string, private cooldown = 0, private maxCharges = 1) {
         this.charges = maxCharges;
     }
 
@@ -12,7 +14,7 @@ export class Action {
         return this.charges > 0;
     }
 
-    perform(player?: Player, target?: Player) {
+    perform(combat: Combat, player?: Player, target?: Player) {
         this.charges--;
     }
 
@@ -27,5 +29,9 @@ export class Action {
         } else {
             this.recharge++;
         }
+    }
+
+    modifyIncomeDamage(damage: number, type: DamageTypes) {
+        return damage;
     }
 }

@@ -1,24 +1,26 @@
 import {Character} from '../character';
 import {Action} from '../action';
-import {SwordCuttingAction} from '../actions/swordCuttingAction';
 import {DamageTypes} from '../models/damageTypes';
-import {ShieldAction} from '../actions/shieldAction';
 import {SwordAction} from '../actions/swordAction';
+import {VampireBiteAction} from '../actions/vampireBiteAction';
+import {RemoveEffectsAction} from '../actions/removeEffectsAction';
+import {ShadowBoltAction} from '../actions/shadowBoltAction';
 
-export class Warrior extends Character {
+export class Vampire extends Character {
     getName(): string {
-        return 'Воин';
+        return 'Вампир';
     }
 
     getHealthMax(): number {
-        return 100;
+        return 80;
     }
 
     getActions(): { [p: string]: Action } {
         return {
-            'рассечь': new SwordCuttingAction(),
             'ударить мечем': new SwordAction(),
-            'ударить щитом': new ShieldAction(),
+            'укус': new VampireBiteAction(),
+            'уход в тень': new RemoveEffectsAction(),
+            'поток тьмы': new ShadowBoltAction()
         };
     }
 
@@ -26,8 +28,9 @@ export class Warrior extends Character {
         return {
             [DamageTypes.BLUNT]: 1.3,
             [DamageTypes.CUTTING]: 0.9,
-            [DamageTypes.FIRE]: 1.2,
-            [DamageTypes.FROST]: 1.1,
+            [DamageTypes.FIRE]: 0.7,
+            [DamageTypes.FROST]: 0.7
         };
     }
+
 }

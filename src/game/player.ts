@@ -6,6 +6,8 @@ import {Character} from './character';
 import {Mage} from './characters/mage';
 import {Warrior} from './characters/warrior';
 import {Barbarian} from './characters/barbarian';
+import {Vampire} from './characters/vampire';
+import {HitAction} from './actions/hitAction';
 
 export class Player {
     currentCombat: Combat;
@@ -25,44 +27,51 @@ export class Player {
         this.action = this.actions[action];
     }
 
-    decreaseHp(damage: number) {
+    decreaseHp(action: HitAction | Effect, damage: number) {
         if (this.health > damage) {
             this.health -= damage;
         } else {
             this.health = 0;
             this.isDead = true;
         }
+
+        this.currentCombat.battleLog.push(`${action.name} наносит ${Math.ceil(damage)} урона`);
     }
 
-    increaseHp(heal: number) {
+    increaseHp(action: Action | Effect, heal: number) {
         if (this.health + heal > this.healthMax) {
             this.health = this.healthMax;
         } else {
             this.health += heal;
         }
+
+        this.currentCombat.battleLog.push(`${action.name} восстанавливает ${Math.ceil(heal)} здоровья`);
     }
 
     getResist(type: DamageTypes): number {
         return this.resists[type] || 1;
     }
 
-    addEffect(effect: Effect) {
+    addEffect(action: Action | Effect, effect: Effect) {
         this.effects.push(effect);
+        this.currentCombat.battleLog.push(`${action.name} накладывает эффек ${effect.name}`);
     }
 
     getName() {
-        return this.username || 'Интересная личность';
+        return this.character.getName();
     }
 
     perform(target: Player) {
-        this.action.perform(this, target);
+        this.action.perform(this.currentCombat, this, target);
 
         Object.keys(this.actions).forEach(key => {
             this.actions[key].tick();
         });
 
         this.action = undefined;
+    }
 
+    tick() {
         this.effects.forEach(effect => {
             effect.tick(this);
         });
@@ -78,6 +87,9 @@ export class Player {
                 break;
             case 'маг':
                 this.character = new Mage();
+                break;
+            case 'вампир':
+                this.character = new Vampire();
                 break;
             default:
                 throw new Error('Unexpected character name');

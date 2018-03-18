@@ -53,12 +53,16 @@ describe('bot', () => {
         bot.processUpdate(getMessage(1, '/invite'));
 
         expect(results).toEqual([
-            {"chatId": "1", "options": undefined, "text": "Дуэль создана, передайте ссылку своему оппоненту:"},
-            {"chatId": "1", "options": undefined, "text": "https://t.me/@testbot?start=testhash"}, {
+            {'chatId': '1', 'options': undefined, 'text': 'Дуэль создана, передайте ссылку своему оппоненту:'},
+            {'chatId': '1', 'options': undefined, 'text': 'https://t.me/@testbot?start=testhash'}, {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'},
+                            {'text': '/готов Воин'},
+                            {'text': '/готов Маг'},
+                            {'text': '/готов Вампир'},
+                        ]],
                     'one_time_keyboard': true
                 }
             },
@@ -83,7 +87,11 @@ describe('bot', () => {
             'chatId': '2',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{'text': '/готов Варвар'}, {'text': '/готов Воин'}, {'text': '/готов Маг'}]],
+                    'keyboard': [[{'text': '/готов Варвар'},
+                            {'text': '/готов Воин'},
+                            {'text': '/готов Маг'},
+                            {'text': '/готов Вампир'},
+                        ]],
                     'one_time_keyboard': true
                 }
             },
@@ -115,12 +123,12 @@ describe('bot', () => {
             'chatId': '1',
             'options': {
                 'reply_markup': {
-                    'keyboard': [[{"text": "/act рассечь"},
+                    'keyboard': [[{'text': '/act рассечь'},
                         {'text': '/act ударить мечем'}, {'text': '/act ударить щитом'}]],
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nusername1 vs username2'
+            'text': 'Противник найден\nВоин vs Маг'
         }, {
             'chatId': '2',
             'options': {
@@ -129,7 +137,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'Противник найден\nusername1 vs username2'
+            'text': 'Противник найден\nВоин vs Маг'
         }]);
     });
 
@@ -153,11 +161,21 @@ describe('bot', () => {
         bot.processUpdate(getMessage(2, '/act огненный шар'));
 
         expect(results).toEqual([
-            {"chatId": "1", "options": undefined, "text": "Вы собрались ударить ударить мечем"},
-            {"chatId": "1", "options": undefined, "text": "ожидаем противника"},
-            {"chatId": "2", "options": undefined, "text": "Вы собрались ударить огненный шар"},
-            {"chatId": "1", "options": undefined, "text": "Ваш противник побежден, игра окончена"},
-            {"chatId": "2", "options": undefined, "text": "Вы побеждены, игра окончена"}
-        ])
+            {'chatId': '1', 'options': undefined, 'text': 'Вы собрались ударить ударить мечем'},
+            {'chatId': '1', 'options': undefined, 'text': 'ожидаем противника'},
+            {'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить огненный шар'},
+            {'chatId': '1', 'options': undefined, 'text': 'Удар мечем наносит 11 урона' +
+                '\nОгненный шар наносит 8 урона' +
+                '\nОгненный шар накладывает эффек Горение' +
+                '\nГорение наносит 4 урона'
+            },
+            {'chatId': '1', 'options': undefined, 'text': 'Ваш противник побежден, игра окончена'},
+            {'chatId': '2', 'options': undefined, 'text': 'Удар мечем наносит 11 урона' +
+                '\nОгненный шар наносит 8 урона' +
+                '\nОгненный шар накладывает эффек Горение' +
+                '\nГорение наносит 4 урона'
+            },
+            {'chatId': '2', 'options': undefined, 'text': 'Вы побеждены, игра окончена'}
+        ]);
     });
 });

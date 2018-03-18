@@ -4,10 +4,11 @@ import {bot} from './bot';
 import {capitalize} from '../../utils/capitalize';
 import {randomBytes} from 'crypto';
 
-const allowedCharacters: {[name: string]: boolean} = {
+export const allowedCharacters: {[name: string]: boolean} = {
     'варвар': true,
     'воин': true,
     'маг': true,
+    'вампир': true,
 };
 
 export class Game {
