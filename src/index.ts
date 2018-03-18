@@ -3,57 +3,30 @@ import {Combat} from './game/combat';
 import {bot} from './game/bot';
 
 const game = new Game();
-let combatsCount = 0;
-let combatsEnded = 0;
 
 bot.onText(/^\/готов\s*(.*)$/, (msg, match) => {
     const chatId = msg.chat.id.toString();
-    let player = game.getPlayer(chatId);
+    const username = msg.chat.username;
 
-    if (!match[1]) {
-        game.showCharacters(chatId);
-
-        return;
-    }
-
-    if (!game.isAllowedCharacter(match[1])) {
-        return;
-    }
-
-    if (!player) {
-        player = game.addPlayer(chatId, msg.chat.username);
-    }
-
-    player.setCharacter(match[1]);
-
-    if (player.currentCombat) {
-        bot.sendMessage(chatId, 'Вы уже ожидаете противника, напишите /стоп для выхода из очереди');
-
-        return;
-    }
-
-    if (game.combats.length === 0) {
-        const combat = new Combat();
-
-        game.combats.push(combat);
-        player.currentCombat = combat;
-        combat.addPlayer(player);
-        bot.sendMessage(chatId, 'Ожидаем противника');
+    if (match[1]) {
+        game.selectCharacter(chatId, match[1]);
     } else {
-        const combat: Combat = game.combats.shift();
-
-        combatsCount++;
-        combat.addPlayer(player);
-        player.currentCombat = combat;
-        combat.start();
+        game.startCombat(chatId, username);
     }
+});
+
+bot.onText(/^\/(invite|вызов)/, (msg) => {
+    const chatId = msg.chat.id.toString();
+    const username = msg.chat.username;
+
+    game.startDuel(chatId, username, null);
 });
 
 bot.onText(/^\/стоп$/, (msg) => {
     const chatId = msg.chat.id.toString();
     const player = game.players[chatId];
 
-    game.combats.splice(game.combats.indexOf(player.currentCombat), 1);
+    game.combatsQueue.splice(game.combatsQueue.indexOf(player.currentCombat), 1);
     player.currentCombat = undefined;
 
     bot.sendMessage(chatId, 'Вы покинули очередь');
@@ -62,9 +35,16 @@ bot.onText(/^\/стоп$/, (msg) => {
 bot.onText(/^\/act (.+)/, (msg, match) => {
     const chatId = msg.chat.id.toString();
     const player = game.players[chatId];
+    const combat = player.currentCombat;
 
     try {
-        if (player.actions[match[1]].isAvailable()) {
+        if (player.action) {
+            bot.sendMessage(chatId, 'Действие уже выбрано');
+
+            return;
+        }
+
+        if (player.actions[match[1]] && player.actions[match[1]].isAvailable()) {
             bot.sendMessage(chatId, 'Вы собрались ударить ' + match[1]);
         } else {
             bot.sendMessage(chatId, `Действие ${match[1]} сейчас не доступно`);
@@ -74,12 +54,12 @@ bot.onText(/^\/act (.+)/, (msg, match) => {
 
         player.setAction(match[1]);
 
-        if (player.currentCombat.allReady()) {
-            player.currentCombat.perform();
-            player.currentCombat.showResult();
+        if (combat.allReady()) {
+            combat.perform();
+            combat.showResult();
 
-            if (player.currentCombat.isEnded) {
-                combatsEnded++;
+            if (combat.isEnded) {
+                game.combatsEnded++;
             }
         } else {
             bot.sendMessage(chatId, 'ожидаем противника');
@@ -93,9 +73,16 @@ bot.onText(/^\/start$/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Приветствую на Арене! Пиши /готов и вступай в бой!');
 });
 
+bot.onText(/^\/start (.*?)$/, (msg, match) => {
+    const chatId = msg.chat.id.toString();
+    const username = msg.chat.username;
+
+    game.startDuel(chatId, username, match[1] || null);
+});
+
 bot.onText(/^\/инфо/, (msg) => {
     const chatId = msg.chat.id.toString();
 
     bot.sendMessage(chatId,
-        `Боев сыграно ${combatsEnded} В данный момент идет ${combatsCount - combatsEnded} боев`);
+        `Боев сыграно ${game.combatsEnded} В данный момент идет ${game.combatsCount - game.combatsEnded} боев`);
 });

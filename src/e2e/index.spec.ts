@@ -1,30 +1,9 @@
-import './index';
-import {bot} from './game/bot';
+import '../index';
+import {bot} from '../game/bot';
 import * as TelegramBot from 'node-telegram-bot-api';
-import {Chat} from 'node-telegram-bot-api';
-import {User} from 'node-telegram-bot-api';
+import {getMessage} from './helpers';
 
 bot.stopPolling();
-
-let updateId = 0;
-
-function getMessage(chatId: number, text: string): TelegramBot.Update {
-    updateId++;
-
-    return {
-        update_id: updateId,
-        message: {
-            message_id: updateId,
-            date: 0,
-            text,
-            chat: {
-                id: chatId,
-                type: 'chat',
-                username: 'username' + chatId,
-            }
-        }
-    };
-}
 
 describe('bot', () => {
 
@@ -194,9 +173,7 @@ describe('bot', () => {
         bot.processUpdate(getMessage(2, '/act ледяная стрела'));
 
         expect(results).toEqual([{
-            'chatId': '2', 'options': undefined, 'text': 'Вы собрались ударить ледяная стрела'
-        }, {
-            'chatId': '2', 'options': undefined, 'text': 'ожидаем противника'
+            'chatId': '2', 'options': undefined, 'text': 'Действие уже выбрано'
         }]);
     });
 
@@ -221,7 +198,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у вас осталось 62/100 здоровья\nу противника 36/70 здоровья'
+            'text': 'у вас осталось 75/100 здоровья\nу противника 36/70 здоровья'
         }, {
             'chatId': '2',
             'options': {
@@ -230,7 +207,7 @@ describe('bot', () => {
                     'one_time_keyboard': true
                 }
             },
-            'text': 'у противника 62/100 здоровья\nу вас осталось 36/70 здоровья'
+            'text': 'у противника 75/100 здоровья\nу вас осталось 36/70 здоровья'
         }]);
     });
 });

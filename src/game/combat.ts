@@ -58,7 +58,7 @@ export class Combat {
                         return 'Ваш противник побежден, игра окончена';
                     }
                 }
-            }).join('\n');
+            }).join('');
     }
 
     getVsMessage(): string {
@@ -91,5 +91,16 @@ export class Combat {
 
     addPlayer(player: Player) {
         this.players[player.chatId] = player;
+    }
+
+    isFull() {
+        return Object.keys(this.players).length === 2;
+    }
+
+    isReadyToStart(): boolean {
+        return this.isFull() &&
+            Object.keys(this.players).every(id => {
+                return !!this.players[id].character;
+            });
     }
 }
